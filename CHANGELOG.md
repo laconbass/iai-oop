@@ -1,7 +1,17 @@
-version 0.0.3
-  - This module is not backwards compatible as it is full-reviewed
+# version 0.0.3
+  - This module is not backwards compatible as it is being full-reviewed
+  - The module now depends on 'iai-util'
+  - The module now exports 'iu', a reference to iai-util
+  - The module adds the following util: 'isInterface'
+  - Added 'Interface' class
+  - The following classes are deprecated and not exported.
+    - ImprovedEmitter
+    - ResourceLoader
+    - RequestRouter
+    - ArrayLike
+    - NameResolver
 
-version 0.0.2
+# version 0.0.2
   - Changues on class ImprovedEmitter
     - Added '.log' method
     - Added 'LOG_FG_IN' attribute
@@ -20,21 +30,21 @@ version 0.0.2
     - ArrayLike
   - Lots of improvements and bugfixes
 
-version 0.0.12
+# version 0.0.12
   - Note this module is not backwards compatible from 0.0.1
   - Deleted unneeded require from NameResolver file
   - Deleted the old ParentClass file
   - Other minor modifications
 
-version 0.0.11
+# version 0.0.11
   - Fixed bugs on ImprovedEmitter
   - Now ImprovedEmitter has a 'class' property
 
-version 0.0.1
+# version 0.0.1
   - Added Classes:
     - NameResolver
   - Now the module exports an object which allows accessing the classes
 
-version 0.0.0
+# version 0.0.0
   - Added Classes:
     - ImprovedEmitter

@@ -1,6 +1,9 @@
 {
   "name": "iai-oop"
-  ,"version": "0.0.2"
-  ,"description": "The Iai Framework philosophy about OOP for node"
+  ,"version": "0.0.3"
+  ,"description": "The Iai Framework philosophy about OOP for node.js"
   ,"main": "iai-oop.js"
+  ,"dependencies": {
+    "iai-util": ">= 0.0.3"
+  }
 }
