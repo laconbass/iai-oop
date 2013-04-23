@@ -1,0 +1,6 @@
+{
+  "name": "iai-oop"
+  ,"version": "0.0.2"
+  ,"description": "The Iai Framework philosophy about OOP for node"
+  ,"main": "iai-oop.js"
+}
