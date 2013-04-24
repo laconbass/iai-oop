@@ -1,4 +1,9 @@
-var iu = module.exports.iu = require('iai-util')
+var iu = require('iai-util')
+  , util = require('util')
 ;
 
-module.exports.Interface = require('./lib/Interface');
+module.exports = {
+  iu: iu,
+  Interface: require('./lib/Interface'),
+  inherits: util.inherits
+}

@@ -12,8 +12,4 @@ var Fake = {
   ,adios: function(){}
 };
 
-var Fake2 = {
-};
-
-Interface.ensureImplements(Fake, Saluda);
-Interface.ensureImplements(Fake2, Saluda);
+Interface.implements(Fake, Saluda);

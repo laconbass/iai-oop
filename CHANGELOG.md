@@ -1,3 +1,7 @@
+# version 0.0.31
+  - 'Interface::ensureImplements' (class method) renamed to 'Interface::implements'
+  - The module now exports 'inherits', alias of node-core 'util.inherits'
+
 # version 0.0.3
   - This module is not backwards compatible as it is being full-reviewed
   - The module now depends on 'iai-util'
