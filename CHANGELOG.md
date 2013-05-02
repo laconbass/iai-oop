@@ -1,6 +1,14 @@
 # version 0.0.31
+  - README.md is now a bit more descriptive
   - 'Interface::ensureImplements' (class method) renamed to 'Interface::implements'
+  - 'Interface::implements' (class method) now returns true on success
   - The module now exports 'inherits', alias of node-core 'util.inherits'
+  - Added @interface 'i.Prototype'
+  - Added @interface 'i.Composite'
+  - Added @interface 'i.Iterable'
+  - Added @interface 'i.Transversable'
+  - Added abstract @prototype 'Prototype'
+  - Added abstract @prototype 'Composite'
 
 # version 0.0.3
   - This module is not backwards compatible as it is being full-reviewed
