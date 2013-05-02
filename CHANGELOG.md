@@ -1,4 +1,5 @@
 # version 0.0.31
+  - Old classes (deprecated) moved to 'lib/old-classes/'
   - README.md is now a bit more descriptive
   - 'Interface::ensureImplements' (class method) renamed to 'Interface::implements'
   - 'Interface::implements' (class method) now returns true on success
