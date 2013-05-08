@@ -7,9 +7,8 @@ This module is a component of [the iai framework](https://npmjs.org/search?q=iai
 
 This node module attemps to be an abstraction layer with all the desired 
 practices for OOP on [iai](https://github.com/laconbass/iai) components or 
-sub-components. It should provide 
-the lower level prototypes, constructors, and util functions to solve and 
-implement any kind of logic on any iai component. 
+sub-components. It should provide the lower level prototypes, constructors, 
+and util functions to solve and implement any kind of logic related to OOP. 
 
 # Practical inheritance
 
