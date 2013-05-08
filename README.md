@@ -1,11 +1,13 @@
 # Warning
 
-This module is a component of [the iai framework](https://npmjs.org/search?q=iai). It's useless for you, until some serious work has been done.
+This module is a component of [the iai framework](https://npmjs.org/search?q=iai).
+ It's useless for you, until some serious work has been done.
 
 # The main goal
 
 This node module attemps to be an abstraction layer with all the desired 
-practices about object oriented programming for iai. It should provide 
+practices for OOP on [iai](https://github.com/laconbass/iai) components or 
+sub-components. It should provide 
 the lower level prototypes, constructors, and util functions to solve and 
 implement any kind of logic on any iai component. 
 
