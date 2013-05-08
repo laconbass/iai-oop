@@ -22,7 +22,7 @@ Let's clarify some concepts before anything:
 **Constructor**: Forgot the "class" concept. Let's call things by their 
 name. Javascript does not have the traditional classes as other OOP 
 languages do. It has *constructors* instead. This way of OOP for javascript 
-is called Classical inheritance by its similarity with the traditional 
+is called *Classical inheritance* by its similarity with the traditional 
 concept of classes. Let's clarify the concept of constructor with an 
 example:
 
