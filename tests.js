@@ -54,12 +54,11 @@ iu.assertor('abstract @prototype Prototype')
   })
 ;
 
-iu.assertor('@prototype Composite')
+iu.assertor('@prototype Composite tester')
   .expects( 'to be exported by the module', !!o.Composite )
   .runs( 'Composite.create()', function(){
     o.Composite.create('test');
   })
-  .expects( 'prototype id to be "unknown" after an instance is created', o.Composite.id == "unknown" )
   .runs( 'prototype implements <Prototype, Composite>', function(){
     o.implements( o.Composite, i.Prototype, i.Composite )
   })
