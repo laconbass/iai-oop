@@ -2,12 +2,20 @@
   SOME STUPID TESTS
 */
 
+
 process.env.NODE_ENV = 'test';
 
-var oop = require('./index')
-  , iu = oop.iu
+var iu = require('iai-util')
+  .load('type checks')
+  .load('assertor')
+  , oop = require('./')
   , Interface = oop.Interface
 ;
+
+iu.isInterface = function( o ){
+  return !!o && o.constructor === Interface;
+}
+
 var Saluda = new Interface('Saluda', ['hola', 'adios']);
 
 var Fake = {
@@ -35,7 +43,9 @@ iu.assertor('Interfaces')
 
 iu.assertor('abstract @prototype Prototype')
   .expects( 'to be exported by the module', !!o.Prototype )
-  .expects( 'to implement <Prototype>', o.implements( o.Prototype, i.Prototype ) )
+  .runs( 'implements <Prototype>', function(){
+    o.implements( o.Prototype, i.Prototype )
+  })
   .throws( 'the init method is called on the prototype itself', function(){
     o.Prototype.init();
   })
@@ -46,7 +56,16 @@ iu.assertor('abstract @prototype Prototype')
 
 iu.assertor('@prototype Composite')
   .expects( 'to be exported by the module', !!o.Composite )
-  .expects( 'to implement <Prototype, Composite>', o.implements( o.Composite, i.Prototype, i.Composite ) )
+  .runs( 'Composite.create()', function(){
+    o.Composite.create('test');
+  })
+  .expects( 'prototype id to be "unknown" after an instance is created', o.Composite.id == "unknown" )
+  .runs( 'prototype implements <Prototype, Composite>', function(){
+    o.implements( o.Composite, i.Prototype, i.Composite )
+  })
+  .runs( 'created instance implements <Prototype, Composite>', function(){
+    o.implements( o.Composite.create('test'), i.Prototype, i.Composite )
+  })
   .throws( 'the init method is called on the @prototype itself', function(){
     o.Composite.init();
   })

@@ -1,3 +1,20 @@
+# version 0.0.4
+  - Main package file moved from "index.js" to "lib/oop.js"
+  - The module no longer depends on 'iai-util'
+  - The module no longer exports 'iu'
+  - The module now depends on 'iai-util' for development (testing)
+  - Redefined the OOP philoshopy:
+    - now it is based on prototypes rather than constructors.
+    - this behaviour is being documented on the package README file
+  - Now the module exports:
+    - `namespace` 'i' wich stores the following `Interface`s:
+      - 'Prototype'
+      - 'Composite'
+      - 'Iterable'
+      - 'Transversable'
+    - `prototype` Prototype
+    - `prototype` Composite
+
 # version 0.0.31
   - Old classes (deprecated) moved to 'lib/old-classes/'
   - README.md is now a bit more descriptive

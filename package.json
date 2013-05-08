@@ -1,10 +1,10 @@
 {
   "name": "iai-oop"
-  ,"version": "0.0.31"
+  ,"version": "0.0.4"
   ,"description": "The Iai Framework philosophy about OOP for node.js"
-  ,"main": "iai-oop.js"
-  ,"dependencies": {
-    "iai-util": ">= 0.0.3"
+  ,"main": "lib/oop.js"
+  ,"devDependencies": {
+    "iai-util": ">= 0.0.41"
   }
   ,"repository": {
     "type": "git", "url": "https://github.com/laconbass/iai-oop.git"
