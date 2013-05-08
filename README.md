@@ -43,7 +43,7 @@ prototype chain always ends on Object.prototype.
 If you don't know about what are we talking about,
 please search further reading about *JavaScript* before continue reading.
 
-## It's about how we write
+## It's all about how we write
 
 Traditionally most people uses Classical inheritance instead Prototypal 
 inheritance. Generally it's said - and considered truth - that *most 
