@@ -4,16 +4,25 @@
   - The module no longer exports 'iu'
   - The module now depends on 'iai-util' for development (testing)
   - Redefined the OOP philoshopy:
-    - now it is based on prototypes rather than constructors.
     - this behaviour is being documented on the package README file
   - Now the module exports:
-    - `namespace` 'i' wich stores the following `Interface`s:
+    - The following interfaces
       - 'Prototype'
+      - 'Factory'
       - 'Composite'
       - 'Iterable'
       - 'Transversable'
-    - `prototype` Prototype
-    - `prototype` Composite
+    - The following prototypes
+      - GenericFactory
+      - GenericComposite
+  - Now the module provides the followin custom error types, 
+    which are stored on the global scope as constructors.
+    - 'BaseError'
+    - 'ValidationError'
+    - 'IOError'
+    - 'ValueError'
+    - 'ArityError'
+    - 'ImplementationError'
 
 # version 0.0.31
   - Old classes (deprecated) moved to 'lib/old-classes/'
