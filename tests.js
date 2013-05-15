@@ -44,36 +44,61 @@ iu.assertor('Interfaces')
   .expects( 'to export the "Transversable" interface', iu.isInterface( i.Transversable ) )
 ;
 
-iu.assertor('@prototype GenericFactory tester')
-  .expects( 'to be exported by the module', !!o.GenericFactory )
-  .runs( 'implements <Prototype>', function(){
-    o.implements( o.GenericFactory, i.Prototype )
-  })
-  .throws( 'the init method is called on the prototype itself', function(){
-    o.GenericFactory.init();
-  })
-  .throws( 'the init method is called on a created object', function(){
-    o.GenericFactory.create().init();
-  })
-;
+function create_error( msg ) {
+  return ImplementationError( "oop.create don't works as expected. " + msg );
+}
 
-iu.assertor('@prototype GenericComposite tester')
-  .expects( 'to be exported by the module', !!o.GenericComposite )
-  .runs( 'Composite.create()', function(){
-    o.GenericComposite.create('test');
+iu.assertor( 'create util fn' )
+  .expects( 'to be exposed', iu.isFn( oop.create ) )
+  .runs( 'simple creation', function(){
+    var prototype = {
+      a: "a",
+      b: "b"
+    };
+    var copy = oop.create( prototype, { c: "c" } );
+    copy.b = "other";
+    if( !prototype.isPrototypeOf( copy ) ) {
+      throw create_error( "Result doesn't have the prototype on the chain." );
+    } else if ( !copy.hasOwnProperty( "c" ) || !copy.hasOwnProperty( "b" ) ) {
+      throw create_error( "Result own property expected." );
+    } else if ( !copy || copy.a != "a" || copy.b != "other" || copy.c != "c" ) {
+      throw create_error( "Returns an unexpected result." );
+    } else if( prototype.b != "b" || !!prototype.c ) {
+      throw create_error( "Modifies the original prototype." );
+    }
   })
-  .runs( 'prototype implements <Prototype, Composite>', function(){
-    o.implements( o.GenericComposite, i.Prototype, i.Composite )
-  })
-  .runs( 'created instance implements <Prototype, Composite>', function(){
-    o.implements( o.GenericComposite.create('test'), i.Prototype, i.Composite )
-  })
-  .throws( 'the init method is called on the @prototype itself', function(){
-    o.GenericComposite.init();
-  })
-  .throws( 'the init method is called on a created object', function(){
-    o.GenericComposite.create().init();
-  })
+/*  .runs( 'complex creation', function(){
+    var a = "a", b = "b", c = "c"
+      , d = "d", e = "e", f = "f"
+      , g = "g"
+      , o = "other"
+      , proto1 = { a: a, b: b, c: c }
+      , proto2 = { d: d, e: e, f: f }
+      , copy = oop.create( proto1, proto2, { g: g, o: g } )
+    ;
+
+    copy.b = o;
+    copy.f = o;
+    copy.o = o;
+
+    if( !proto1.isPrototypeOf( copy ) || !proto2.isPrototypeOf( copy ) ) {
+      throw create_error( "Result doesn't have all the prototypes on the chain." );
+    } else if ( !copy.hasOwnProperty( g ) || !copy.hasOwnProperty( b ) || copy.hasOwnProperty( f ) ) {
+      throw create_error( "Result own property expected." );
+    } else if ( copy.a != a || copy.c != c ) {
+      throw create_error( "Doesn't inherit the first prototype." );
+    } else if ( copy.d != d || copy.e != e ) {
+      throw create_error( "Doesn't inherit the second prototype." );
+    } else if( proto1.b != b || !!proto1.g || !!proto1.d || proto1.e || proto1.f ) {
+      throw create_error( "Modifies the first prototype." );
+    } else if( proto2.f != f || !!proto2.g || !!proto2.a || !!proto2.b || !!proto2.c ) {
+      throw create_error( "Modifies the second prototype." );
+    } else if( copy.g != g ) {
+      throw create_error( "Doesn't add properties." );
+    } else if( copy.b != o || copy.f != o || copy.o != 0 ) {
+      throw create_error( "Can't edit the properties." );
+    }
+  })// */
 ;
 
 iu.assertor( 'constructor util fn' )
@@ -107,6 +132,39 @@ iu.assertor( 'callable util fn' )
       throw Error( "init is not run" );
   })
 ;
+
+iu.assertor('@prototype GenericFactory tester')
+  .expects( 'to be exported by the module', !!o.GenericFactory )
+  .runs( 'implements <Prototype>', function(){
+    o.implements( o.GenericFactory, i.Prototype )
+  })
+  .throws( 'the init method is called on the prototype itself', function(){
+    o.GenericFactory.init();
+  })
+  .throws( 'the init method is called on a created object', function(){
+    o.GenericFactory.create().init();
+  })
+;
+
+iu.assertor('@prototype GenericComposite tester')
+  .expects( 'to be exported by the module', !!o.GenericComposite )
+  .runs( 'Composite.create()', function(){
+    o.GenericComposite.create('test');
+  })
+  .runs( 'prototype implements <Prototype, Composite>', function(){
+    o.implements( o.GenericComposite, i.Prototype, i.Composite )
+  })
+  .runs( 'created instance implements <Prototype, Composite>', function(){
+    o.implements( o.GenericComposite.create('test'), i.Prototype, i.Composite )
+  })
+  .throws( 'the init method is called on the @prototype itself', function(){
+    o.GenericComposite.init();
+  })
+  .throws( 'the init method is called on a created object', function(){
+    o.GenericComposite.create().init();
+  })
+;
+
 
 iu.assertor('Error tester')
   .expects( 'to expose BaseError on global scope', iu.isFn( BaseError ) )
