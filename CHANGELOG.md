@@ -23,6 +23,8 @@
     - 'ValueError'
     - 'ArityError'
     - 'ImplementationError'
+    - 'FlowError'
+  - Added "Deferred" and "Deferred.Promise"
 
 # version 0.0.31
   - Old classes (deprecated) moved to 'lib/old-classes/'

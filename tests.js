@@ -1,55 +1,113 @@
-/*
-  SOME STUPID TESTS
-*/
-
-
 process.env.NODE_ENV = 'test';
 
 var iu = require('iai-util')
-  .load('type checks')
-  .load('assertor')
+    .load('type checks')
+    .load('assertor')
   , oop = require('./')
   , util = require('util')
+  , isFn = iu.isFn
   , Interface = oop.Interface
+  , isInterface = function( o ) {
+    return !!o && o.constructor === Interface;
+  }
 ;
 
-var caca = oop.constructor();
+/**
+ * TEST CUSTOM ERRORS
+ *
+ */
 
-iu.isInterface = function( o ){
-  return !!o && o.constructor === Interface;
-}
-
-var Saluda = new Interface('Saluda', ['hola', 'adios']);
-
-var Fake = {
-  hola: function(){}
-  ,adios: function(){}
-};
-
-iu.assertor('inheritance helpers tester')
-  .expects( 'implements to be a function', iu.isFunction( oop.implements) )
-  .expects( 'inherits to be a function', iu.isFunction( oop.inherits) )
-  .expects( 'create to be a function', iu.isFunction( oop.create) )
-  .expects( 'abstract to be a function', iu.isFunction( oop.abstract) )
+iu.assertor('Error tester')
+  .expects( 'to expose BaseError on global scope', isFn( BaseError ) )
+  .expects( 'BaseError to have Error on its prototype chain',
+    Error.prototype.isPrototypeOf( BaseError.prototype )
+  )
+  .runs( 'create a BaseError instance', function() {
+    var err = BaseError( "probando" );
+  })
+  .expects( 'BaseError instance to be instanceof Error',
+    BaseError( 'prueba' ) instanceof Error
+  )
+  .runs( 'catching a BaseError', function() {
+    try {
+      throw BaseError( "prueba" );
+    } catch(e) {
+      if( !e instanceof BaseError ){
+        throw e;
+      }
+    }
+  })
+  .throws( BaseError, 'throw BaseError', function(){ throw BaseError( "prueba" ); } )
+  .expects( 'to expose ValidationError on global scope', isFn( ValidationError ) )
+  .expects( 'ValidationError to have Error on its prototype chain',
+    Error.prototype.isPrototypeOf( ValidationError.prototype )
+  )
+  .expects( 'ValidationError instance to be instanceof Error',
+    ValidationError( 'prueba' ) instanceof Error
+  )
 ;
 
-var o = oop
-  , i = oop
-;
+/**
+ * TEST INTERFACES
+ *
+ */
+
 iu.assertor('Interfaces')
-  .expects( 'Fake to implement hola', Interface.implements(Fake, Saluda) )
-  .expects( 'to export the "Prototype" interface', iu.isInterface( i.Prototype ) )
-  .expects( 'to export the "Composite" interface', iu.isInterface( i.Composite ) )
-  .expects( 'to export the "Iterable" interface', iu.isInterface( i.Iterable ) )
-  .expects( 'to export the "Transversable" interface', iu.isInterface( i.Transversable ) )
+  .expects( 'Fake to implement Saluda', Interface.implements(
+    { hola: function(){} },
+    new Interface( 'Saluda', [ 'hola' ] )
+  ) )
+  .expects( 'to export the "Prototype" interface',
+            isInterface( oop.Prototype )
+  )
+  .expects( 'to export the "Factory" interface',
+            isInterface( oop.Factory )
+  )
+  .expects( 'to export the "Composite" interface',
+            isInterface( oop.Composite )
+  )
+  .expects( 'to export the "Iterable" interface',
+            isInterface( oop.Iterable )
+  )
+  .expects( 'to export the "Transversable" interface',
+            isInterface( oop.Transversable )
+  )
+  .expects( 'to export the "DeferredTask" interface',
+            isInterface( oop.DeferredTask )
+  )
+  .expects( 'to export the "CallbackPromise" interface',
+            isInterface( oop.CallbackPromise )
+  )
+;
+
+/**
+ * TEST INHERITANCE HELPERS
+ *
+ */
+
+iu.assertor('aliases tester')
+  .expects( 'implements to be an alias for Interface.implements',
+            oop.implements === Interface.implements
+  )
+  .expects( 'inherits to be an alias for util.inherits',
+            oop.inherits === util.inherits
+  )
+;
+
+iu.assertor( 'oop.abstract' )
+  .expects( 'to be a function', isFn( oop.abstract ) )
+  .expects( 'to return a function', isFn( oop.abstract() ) )
+  .throws( ImplementationError, 'call a function created with oop.abstract',
+           function() { oop.abstract( 'something' )(); }
+  )
 ;
 
 function create_error( msg ) {
   return ImplementationError( "oop.create don't works as expected. " + msg );
 }
 
-iu.assertor( 'create util fn' )
-  .expects( 'to be exposed', iu.isFn( oop.create ) )
+iu.assertor( 'create function' )
+  .expects( 'to be a function', isFn( oop.create ) )
   .runs( 'simple creation', function(){
     var prototype = {
       a: "a",
@@ -67,7 +125,77 @@ iu.assertor( 'create util fn' )
       throw create_error( "Modifies the original prototype." );
     }
   })
-/*  .runs( 'complex creation', function(){
+;
+
+iu.assertor( 'oop.constructor' )
+  .expects( 'to be a function', isFn( oop.constructor ) )
+  .expects( 'to return a function', isFn( oop.constructor() ) )
+  .runs( 'instanceof self works', function(){
+    var c = oop.constructor();
+    console.assert( new c() instanceof c, 'with new keyword' );
+    console.assert( c() instanceof c, 'without new keyword' );
+  } )
+;
+
+var FakeFactory = {
+  create: function() { return oop.create( FakeFactory ); }
+};
+
+var FakeFactory2 = {
+  create: function() { return "check"; }
+};
+
+iu.assertor( 'oop.factory' )
+  .expects( 'to be a function', isFn( oop.factory ) )
+  .throws( ImplementationError,
+           'is called passing a prototype without a create method',
+           function() { oop.factory( {} ) }
+  )
+  .expects( 'to return a function when called properly', isFn( oop.factory( FakeFactory ) ) )
+  .expects( 'returned value of create method when returned function is called',
+            oop.factory( FakeFactory2 )() === "check"
+  )
+  .expects( 'an object with given prototype in the chain when returned function is called',
+            FakeFactory.isPrototypeOf( oop.factory( FakeFactory )() )
+  )
+;
+
+// TODO oop.factoryFrom tests
+iu.assertor( 'oop.factoryFrom' )
+  .expects( 'to be a function', isFn( oop.factoryFrom ) )
+;
+
+iu.assertor( 'callable util fn' )
+  .expects( 'to be a function', isFn( oop.callable ) )
+  .expects( 'to return a function', isFn( oop.callable() ) )
+  .expects( 'object returned by returned fn has the given prototype on its chain',
+    Error.prototype.isPrototypeOf( oop.callable( Error.prototype )( "msg" ) )
+  )
+  .expects( "object returned by returned fn is instanceof given prototype's constructor",
+    oop.callable( Error.prototype )( "message" ) instanceof Error
+  )
+  .runs( "init function on initialize", function() {
+    var ok = false;
+    var customerror = oop.callable( oop.create( Error.prototype, {
+      init: function() {
+        ok = true;
+      }
+    } ) );
+    var prueba = customerror();
+    if( !ok )
+      throw Error( "init is not run" );
+  })
+;
+
+// TODO oop.callableFrom tests
+iu.assertor( 'oop.callableFrom' )
+  .expects( 'to be a function', isFn( oop.callableFrom ) )
+;
+
+/*
+// TODO
+iu.assertor( 'createChain' )
+  .runs( 'complex creation', function(){
     var a = "a", b = "b", c = "c"
       , d = "d", e = "e", f = "f"
       , g = "g"
@@ -98,102 +226,135 @@ iu.assertor( 'create util fn' )
     } else if( copy.b != o || copy.f != o || copy.o != 0 ) {
       throw create_error( "Can't edit the properties." );
     }
-  })// */
-;
-
-iu.assertor( 'constructor util fn' )
-  .expects( 'to be exposed', iu.isFn( oop.constructor ) )
-  .expects( 'to return a function', iu.isFn( oop.constructor() ) )
-  .runs( 'instanceof self works', function(){
-    var c = oop.constructor();
-    console.assert( new c() instanceof c, 'with new keyword' );
-    console.assert( c() instanceof c, 'without new keyword' );
-  } )
-;
-
-iu.assertor( 'callable util fn' )
-  .expects( 'to be exposed', iu.isFn( oop.callable ) )
-  .expects( 'to return a function', iu.isFn( oop.callable() ) )
-  .expects( 'object returned by returned fn has the given prototype on its chain',
-    Error.prototype.isPrototypeOf( oop.callable( Error.prototype )( "msg" ) )
-  )
-  .expects( "object returned by returned fn is instanceof given prototype's constructor",
-    oop.callable( Error.prototype )( "message" ) instanceof Error
-  )
-  .runs( "init function on initialize", function() {
-    var ok = false;
-    var customerror = oop.callable( oop.create( Error.prototype, {
-      init: function() {
-        ok = true;
-      }
-    } ) );
-    var prueba = customerror();
-    if( !ok )
-      throw Error( "init is not run" );
   })
 ;
+*/
 
-iu.assertor('@prototype GenericFactory tester')
-  .expects( 'to be exported by the module', !!o.GenericFactory )
+/**
+ * TEST DESIGN PATTERNS GENERIC PROTOTYPES
+ *
+ */
+
+iu.assertor( 'oop.GenericFactory' )
+  .expects( 'to be exported by the module', !!oop.GenericFactory )
   .runs( 'implements <Prototype>', function(){
-    o.implements( o.GenericFactory, i.Prototype )
+    oop.implements( oop.GenericFactory, oop.Prototype )
   })
   .throws( 'the init method is called on the prototype itself', function(){
-    o.GenericFactory.init();
+    oop.GenericFactory.init();
   })
   .throws( 'the init method is called on a created object', function(){
-    o.GenericFactory.create().init();
+    oop.GenericFactory.create().init();
   })
 ;
 
-iu.assertor('@prototype GenericComposite tester')
-  .expects( 'to be exported by the module', !!o.GenericComposite )
+iu.assertor( 'oopGenericComposite' )
+  .expects( 'to be exported by the module', !!oop.GenericComposite )
   .runs( 'Composite.create()', function(){
-    o.GenericComposite.create('test');
+    oop.GenericComposite.create('test');
   })
   .runs( 'prototype implements <Prototype, Composite>', function(){
-    o.implements( o.GenericComposite, i.Prototype, i.Composite )
+    oop.implements( oop.GenericComposite, oop.Prototype, oop.Composite )
   })
   .runs( 'created instance implements <Prototype, Composite>', function(){
-    o.implements( o.GenericComposite.create('test'), i.Prototype, i.Composite )
+    oop.implements( oop.GenericComposite.create('test'), oop.Prototype, oop.Composite )
   })
   .throws( 'the init method is called on the @prototype itself', function(){
-    o.GenericComposite.init();
+    oop.GenericComposite.init();
   })
   .throws( 'the init method is called on a created object', function(){
-    o.GenericComposite.create().init();
+    oop.GenericComposite.create().init();
   })
 ;
 
 
-iu.assertor('Error tester')
-  .expects( 'to expose BaseError on global scope', iu.isFn( BaseError ) )
-  .expects( 'BaseError to have Error on its prototype chain',
-    Error.prototype.isPrototypeOf( BaseError.prototype )
+/**
+ * TEST DEFERRED OBJECT
+ *
+ */
+
+var t = 1000;
+
+iu.assertor( 'oop.Deferred' )
+  .expects( 'to be a function', isFn( oop.Deferred ) )
+  .expects( 'to have a "Promise" property, which is a function',
+            isFn( oop.Deferred.Promise )
   )
-  .runs( 'create a BaseError instance', function() {
-    var err = BaseError( "probando" );
+  .runs( 'most simple case', function( done ) {
+    var deferred = new oop.Deferred();
+    // emulate an async task
+    setTimeout( function(){
+      deferred.accept();
+    }, t );
+    // done should be executed after `t`
+    deferred.promise.done( done );
   })
-  .expects( 'BaseError instance to be instanceof Error',
-    BaseError( 'prueba' ) instanceof Error
-  )
-  .runs( 'catching a BaseError', function() {
-    try {
-      throw BaseError( "prueba" );
-    } catch(e) {
-      if( !e instanceof BaseError ){
-        throw e;
+  .throws( FlowError, "rejected without a fail callback attached",
+  function( done ) {
+    var deferred = new oop.Deferred();
+    deferred.reject( FlowError( "testing reject" ) );
+  })
+  .runs( "pass a failture throught the chain", function( done ) {
+    var deferred = new oop.Deferred();
+    deferred.promise
+      .then(function(){
+        done( Error( "this should not be executed" ) )
+      })
+      .then(function(){
+        done( Error( "neither this" ) )
+      })
+      .then(function(){
+        done( Error( "of course this either" ) )
+      })
+      .fail(function( e ){
+        if ( e.message == "testing reject" )
+          done();
+        else
+          done( e );
+      })
+    ;
+    // emulate the async task
+    setTimeout(function(){
+      deferred.reject( Error( "testing reject" ) );
+    }, t );
+  })
+  .runs( "double chained sync callback", function( done ) {
+    var deferred = new oop.Deferred();
+    deferred.promise
+      .then(function(){
+        // something is done and...
+        done();
+      })
+    ;
+    // emulate the async task
+    setTimeout(function(){
+      deferred.accept();
+    }, t );
+  })
+  .runs( 'reject call after accept call catching FlowError',
+  function( done ) {
+    var deferred = new oop.Deferred();
+    // emulate an async task
+    setTimeout( function(){
+      deferred.accept();
+    }, t );
+    // emulate a reject call after accept call
+    // this should not affect the promise because it's already accepted
+    setTimeout( function(){
+      var fake = Error( 'fake error' );
+      try {
+        deferred.reject( fake );
+      } catch(e) {
+        if ( e instanceof FlowError ) {
+          done();
+        } else {
+          done( e );
+        }
       }
-    }
+    }, t + t );
+    // fail should not be executed
+    deferred.promise.fail( done );
   })
-  .throws( BaseError, 'throw BaseError', function(){ throw BaseError( "prueba" ); } )
-  .expects( 'to expose ValidationError on global scope', iu.isFn( ValidationError ) )
-  .expects( 'ValidationError to have Error on its prototype chain',
-    Error.prototype.isPrototypeOf( ValidationError.prototype )
-  )
-  .expects( 'ValidationError instance to be instanceof Error',
-    ValidationError( 'prueba' ) instanceof Error
-  )
 ;
 
 /*console.log( require('util').inspect(
