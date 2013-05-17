@@ -5,6 +5,7 @@ var iu = require('iai-util')
     .load('assertor')
   , oop = require('./')
   , util = require('util')
+  , f = util.format
   , isFn = iu.isFn
   , Interface = oop.Interface
   , isInterface = function( o ) {
@@ -339,7 +340,9 @@ iu.assertor( 'oop.Deferred' )
       deferred.accept();
     }, t );
     // emulate a reject call after accept call
-    // this should not affect the promise because it's already accepted
+    // this should not affect the promise 
+    // because it's already accepted, but throws
+    // an error for better Flow control
     setTimeout( function(){
       var fake = Error( 'fake error' );
       try {
@@ -354,6 +357,90 @@ iu.assertor( 'oop.Deferred' )
     }, t + t );
     // fail should not be executed
     deferred.promise.fail( done );
+  })
+  .runs( 'catch an error thrown on "done"',
+           function( tested ){
+    var deferred = new oop.Deferred()
+      , fake_error = Error( "testing errors" )
+    ;
+    // emulate an async task
+    setTimeout( function(){
+      deferred.accept();
+    }, t );
+    deferred.promise
+      .done(function(){
+        console.log( 'going to throw error' );
+        throw fake_error;
+      })
+    .then( function( next ) {
+      tested( Error( "task 2 called" ) );
+    } )
+    .then( function( next ) {
+      tested( Error( "task 3 called" ) );
+    } )
+      .fail( function( err ) {
+        if( err === fake_error ) { 
+          console.log( 'error catched' );
+          tested();
+        } else {
+          tested( Error( "couldn't catch error" ) );
+        }
+      })
+    ;
+  })
+  .runs( 'preserves context and args, rewinds',
+         function( tested ){
+    // DRY helper
+    function check( name, ctx, args ) {
+      return function( next ) {
+        if ( isFn( next ) ) {
+          args.unshift( next );
+        }
+        for ( var key in args ) {
+          if ( arguments[ key ] !== args[ key ] ){
+            throw f( '"%s" arg %d not ok',
+                     name, key
+            );
+          }
+        }
+        console.log( '"%s" args ok', name );
+        if ( this !== ctx ) {
+         throw f( '"%s" context not ok', name );
+        }
+        console.log( '"%s" context ok', name );
+        if ( isFn( next ) ) {
+          args.shift();
+          next.apply( ctx, args );
+        }
+        ;
+      };
+    };
+    var fake_ctx = { a: "z" }
+      , deferred = new oop.Deferred( fake_ctx );
+    ;
+    // setup the chain
+    var check_ctx = deferred.promise
+      .done( check( "done", fake_ctx, [
+        "a", 7, true
+      ] ) )
+    .then( check( "then 1", fake_ctx, [
+      "a", 7, true
+    ] ) )
+    .then( check( "then 2", deferred.promise, [
+      "a", 7, true
+    ] ) )
+    .then( fake_ctx )
+    ;
+    // emulate the async task, passing args
+    setTimeout(function(){
+      deferred.accept( "a", 7, true );
+      if ( check_ctx === fake_ctx ) {
+        console.log( "then 3 rewinds ok" );
+        tested();
+      } else {
+        tested( Error( "bad rewind" ) );
+      }
+    }, t );
   })
 ;
 
