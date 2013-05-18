@@ -274,7 +274,7 @@ iu.assertor( 'oopGenericComposite' )
  *
  */
 
-var t = 1000;
+var t = 500;
 
 iu.assertor( 'oop.Deferred' )
   .expects( 'to be a function', isFn( oop.Deferred ) )
@@ -420,9 +420,6 @@ iu.assertor( 'oop.Deferred' )
     ;
     // setup the chain
     var check_ctx = deferred.promise
-      .done( check( "done", fake_ctx, [
-        "a", 7, true
-      ] ) )
     .then( check( "then 1", fake_ctx, [
       "a", 7, true
     ] ) )
@@ -441,6 +438,32 @@ iu.assertor( 'oop.Deferred' )
         tested( Error( "bad rewind" ) );
       }
     }, t );
+  })
+  .runs( 'preserves args on next_task', function( tested ) {
+    var deferred = oop.Deferred();
+    // emulate the async task
+    setTimeout(function(){ deferred.accept() }, t );
+    deferred.promise
+      .then(function( next ){
+        // we do something before call next...
+        setTimeout(function(){
+          next( 'test-subject' )
+        }, t );
+      })
+      .done(function( subject ){
+        if ( subject !== 'test-subject' ) {
+          throw Error( "next_task doesn't pass args to done callback");
+        }
+        tested();
+      })
+      .then(function( next, subject ) {
+        if ( subject !== 'test-subject' ) {
+          throw Error( "next_task doesn't pass args to then callback");
+        }
+        tested();
+      })
+      .fail( tested )
+    ;
   })
 ;
 
