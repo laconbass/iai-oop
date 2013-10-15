@@ -4,6 +4,9 @@
   "description": "iai-oop is a utility toolset to ease OOP. The filosofy is to type less while being more expressive.",
   "main": "lib/oop.js",
   "author": "Lorenzo García Rivera",
+  "dependencies": {
+    "iai-is": "*"
+  }
   "devDependencies": {
     "mocha": "1.12.x",
     "chai": "~1.8.0"
