@@ -1,3 +1,8 @@
+var is = require( 'iai-is' )
+  , isFn = is( 'Function' )
+  , isObject = is( 'Object' )
+;
+
 /**
  * oop utilities are functional tools to perform common tasks on OOP.
  * The filosofy is to type less while being more expressive.
@@ -5,26 +10,23 @@
 
 exports = module.exports = oop;
 
-exports.version = '1';
-exports.stability = 1;
-
 function oop( o ) {
-  return new Oop(o);
+  return new OopStandardApi(o);
 }
 
 /**
- * @constructor Oop: provides the standard oop api
+ * @constructor OopStandardApi: provides the standard oop api. Internal use.
  *
  * The standard oop api is designed to provide a chainable way for defining
  * object properties and its atributes. On creation, an object is put on stage,
  * and each api call will perform its action over the staged object.
  */
 
-function Oop( o ){
+function OopStandardApi( o ){
   this.o = o;
 }
 
-var OopStandardApi = Oop.prototype = {
+OopStandardApi.prototype = {
   /** @function hidden: defines a non-enumerable, non-writable, data descriptor
    * on the staged object.
    *   @param pname [String]: the property name
@@ -94,10 +96,7 @@ var OopStandardApi = Oop.prototype = {
   }
 };
 
-var isObject = require( './is' )( 'Object' );
-
 // DRY helper. creates a method delegator (internal use)
-var isFn = require( './is' )( 'Function' );
 function use( object, method ){
   if( !isFn(object[ method ]) ) {
     throw Error( "object does not have a method named " + method );
@@ -112,6 +111,8 @@ function use( object, method ){
  * @function create: creates a new object with the specified prototype
  * and returns a new standard oop api with the new object staged.
  *   @param prototype [object]: the object to be used as prototype
+ *
+ * This is a shortcut for `oop( Object.create(prototype) )`
  *
  * As aditional reference, see on the ECMA 5.1 spec...
  * - [Object.create alghoritm](http://www.ecma-international.org/ecma-262/5.1/#sec-15.2.3.5)
@@ -139,94 +140,37 @@ oop.extend = function( prototype, extension ){
 }
 
 /**
- * @function object: define constructor's prototype. If extension is given,
- * use as prototype the result of extending prototype with extension.
- */
-
-oop.object = function( constructor, prototype, extension ){
-  if( extension ){
-    prototype = oop.extend( prototype, extension );
-  }
-  return oop.define( constructor, prototype );
-}
-
-/**
- * @function oop.define: fixes instanceof checks
- *   @param contructor: the named function to be used as constructor
- *   @param prototype: the object to be used as prototype
- *   @returns: `prototype`
+ * @function creator: define constructor's prototype. If extension is given,
+ * use as prototype the result of extending prototype with extension. Additionally,
+ * any object who has `prototype` on its prototype chain will pass an `instanceof`
+ * check against the constructor function.
  *
- * given a `constructor` function, any object instance who has `prototype`
- * on its prototype chain will pass an `instanceof` check against it.
- * Ex:
- *     function foo(){
- *       return bar.create.apply( bar, arguments );
- *     }
- *     var bar = oop.define( foo, {
- *       create: function(){
- *         return Object.create( this );
- *       }
- *     })
- *
- *     assert( Object.create(bar) instanceof foo )
- *     assert( bar.create() instanceof foo )
- *     assert( foo() instanceof foo )
- *
- * This is because
- *     Object.getPrototypeOf( Object.create(bar) ) === foo.prototype
- *     Object.getPrototypeOf( bar.create() ) === foo.prototype
- *     Object.getPrototypeOf( foo() ) === foo.prototype
+ *     Object.create(prototype) instanceof constructor
+ *     // is true because
+ *     Object.getPrototypeOf( Object.create(prototype) ) === constructor.prototype
  *
  * see [`instanceof` reference on mozilla developer network](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/instanceof)
  *
- * The define function also adds a descriptive `toString` method, if `prototype`
- * does not define one. This generic toString method will return:
- *     "[object" + constructor.name + "]"
- *
+ * This function also adds a descriptive `toString` method, if `prototype` or
+ * `extension` does not define one and `constructor` is a named function.
+ * This generic toString method will return: `"[object" + constructor.name + "]"`
  */
 
-var isNamedFn = function(o){
-  return ('function' == typeof(o)) && !!o.name;
-}
-
-oop.define = function( constructor, prototype ) {
-  if( !isNamedFn(constructor) ){
-    throw TypeError( "constructor must be a named function");
+oop.creator = function( constructor, prototype, extension ){
+  if( !isFn(constructor) ){
+    throw TypeError( "constructor must be a function");
   }
-  if( !prototype.hasOwnProperty('toString') ) {
+  if( extension ){
+    prototype = oop.extend( prototype, extension );
+  }
+  if( !prototype.hasOwnProperty('toString') && constructor.name ) {
     prototype.toString = function(){
       return "[object "+constructor.name+"]";
     }
   }
-  // fix instanceof checks
-  return constructor.prototype = prototype;
-};
-
-/**
- * @function factory: shorcut to define a object factory
- *   @param constructor: the named function to be returned
- *   @param prototype: the prototype to be used
- *   @returns constructor
- *
- * This function does the same as oop.define, but returns the constructor.
- *
- * The following example:
- *     var foo = function MyFactory(){
- *       return Object.create( MyFactory.prototype );
- *     }
- *     oop.define( foo, {
- *       // My custom prototype
- *     })
- *
- * Does the same as the following code:
- *     var foo = oop.factory(function MyFactory(){
- *       return Object.create( MyFactory.prototype );
- *     }, {
- *        // My custom prototype
- *     })
- */
-
-oop.factory = function( constructor, prototype ){
-  oop.define( constructor, prototype );
-  return constructor;
+  return oop(function Creator(){
+    return constructor.apply( prototype, arguments );
+  }).set( 'prototype', prototype )
+    .o
+  ;
 }

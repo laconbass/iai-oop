@@ -2,20 +2,23 @@
   "name": "iai-oop",
   "version": "1.0.0",
   "description": "iai-oop is a utility toolset to ease OOP. The filosofy is to type less while being more expressive.",
-  "main": "lib/oop.js",
-  "author": "Lorenzo García Rivera",
+  "main": "index.js",
+  "files": [ "index.js", "LICENSE" ],
   "dependencies": {
     "iai-is": "*"
   },
   "devDependencies": {
     "mocha": "1.12.x",
-    "chai": "~1.8.0"
+    "chai": "~1.8.0",
+    "iai-test": "*"
+  },
+  "scripts": {
+    "test": "node node_modules/.bin/mocha"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/laconbass/iai-oop.git"
   },
-  "scripts": {
-    "test": "node node_modules/.bin/mocha"
-  }
+  "author": "Lorenzo García Rivera",
+  "license": "BSD-2-Clause"
 }
