@@ -13,7 +13,7 @@ function testChainableApi( api, methods ){
   }
 }
 
-describe( "util/oop", function(){
+describe( "oop", function(){
 
   it( "should return an standard oop api", function(){
     testChainableApi( oop({}), {
@@ -21,7 +21,6 @@ describe( "util/oop", function(){
       hidden: [ 'hidden name', 'hidden value' ],
       set: [ 'set name', 'set value' ],
       extend: [ {} ],
-      notifier: []
     });
   });
 
