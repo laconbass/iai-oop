@@ -1,10 +1,3 @@
-# Warning
-
- This module is a component of [the iai framework](https://npmjs.org/search?q=iai).
- It's useless for you, until some serious work has been done.
-
-----------------------------
-
 # iai-oop
 
 iai-oop is a utility belt to deal with object declarations, in the context of OOP for javascript. It has been designed to standarize the inheritance pattern used within [iai](https://npmjs.org/search?q=iai) related modules.
