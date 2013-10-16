@@ -15,29 +15,21 @@ Everything is a instance in javascript, so talking about classes, even in quotes
 
 ## ~~constructors~~ builders
 
-Research about creational design patterns and cross out definitions that refer specifically to classes (key #1):
-
-* ~~*Abstract Factory*:  Creates an instance of several families of classes. Provide an interface for creating families of related or dependent objects without specifying their concrete classes.~~
-* *Builder*: Separates object construction from its representation. Separate the construction of a complex object from its representation so that the same construction processes can create different representations.
-* ~~*Factory Method*: Creates an instance of several derived classes. Define an interface for creating an object, but let subclasses decide which class to instantiate. Factory Method lets a class defer instantiation to subclasses.~~
-* *Prototype*: A fully initialized instance to be copied or cloned. Specify the kinds of objects to create using a prototypical instance, and create new objects by copying this prototype.
-* ~~*Singleton*: A class of which only a single instance can exist. Ensure a class only has one instance, and provide a global point of access to it.~~
-
-*prototype* and *builder* are the patterns that do not rely specifically on the class concept by definition. In fact, JavaScript implements both natively:
+Research about creational design patterns and cross out definitions that refer specifically to the concept of *classes*. *Prototype* and *Builder* are the patterns that do not rely specifically on the class concept by definition. In fact, JavaScript implements both natively:
 
 * The prototype pattern, through the native `Object`. See on the ECMA 5.1 specification:
 
   * [*prototype* definition](http://www.ecma-international.org/ecma-262/5.1/#sec-4.3.5)
   * [`Object.create` alghoritm](http://www.ecma-international.org/ecma-262/5.1/#sec-15.2.3.5)
 
-        // prototype is a fully initialized instance of Object.
-        var prototype = {
-          // ...
-        };
-        // create a new object with specified prototype
-        var object = Object.create( prototype );
+            // prototype is a fully initialized instance of Object.
+            var prototype = {
+              // ...
+            };
+            // create a new object with specified prototype
+            var object = Object.create( prototype );
 
-* The builder pattern, allowing the use of a function as an object's ~constructor~ when invoked with the `new` keyword (aka. *constructor pattern*). As said previously, the use of the `new` keyword should be completely eliminated so this pattern should be avoided.
+* The builder pattern, allowing the use of a function as an object's ~~constructor~~ when invoked with the `new` keyword (aka. *constructor pattern*). As said previously, the use of the `new` keyword should be completely eliminated so this pattern should be avoided.
 
         // the function builder separates object construction from
         // its representation (aka instance)
@@ -54,7 +46,7 @@ Research about creational design patterns and cross out definitions that refer s
 
 ## ~~prototypal~~ ~~classical~~ practical inheritance
 
-As said, the tools to implement a prototypal inheritance pattern, where object instances are created from other object instances, are natively bundled within ECMAScript specification. `Object.create` is the way to *create a new object with the specified prototype*. The challengue is a pattern that efficiently replaces the constructor pattern on the task of *initialize a newly created object with the specified prototype*. The solution is quite simple, and surprisingly somewhere between the *constructor pattern* and the *prototypal inheritance pattern* .
+As said, the tools to implement a prototypal inheritance pattern, where object instances are created from other object instances, are natively bundled within ECMAScript specification. `Object.create` is the way to *create a new object with the specified prototype*. The challengue is a pattern that efficiently replaces the ~~constructor~~ builder pattern on the task of *initialize a newly created object with the specified prototype*. The solution is quite simple, and surprisingly somewhere between the *constructor pattern* and the *prototypal inheritance pattern* .
 
         function builder(){
           var instance = Object.create(prototype);
