@@ -1,6 +1,10 @@
 # iai-oop
 
-iai-oop is a utility belt to deal with object declarations, in the context of OOP for javascript. It has been designed to standarize the inheritance pattern used within [iai](https://npmjs.org/search?q=iai) related modules.
+iai-oop is an utility belt to deal with object declarations, in the context of OOP for javascript. It has been built on top of [the practical-inheritance module](https://npmjs.org/package/practical-inheritance). Please read further the paper [*An alternative to the constructor pattern*](https://github.com/laconbass/practical-inheritance/blob/master/README.md) to further understanding.
+
+
+This module has been designed to be wildely used within [iai](https://npmjs.org/search?q=iai) related modules. It features a chainable api that reduces the verbosity of vanilla javascript on defining object's properties and its attributes, plus some shortcut functions for common operations on OOP.
+
 
 ## Principles
 
@@ -77,7 +81,7 @@ The big concern now is how to implement the inheritance chain, where objects cre
       Grandpa.prototype = {
         // ...
       };
-      
+
       function Parent(){
         var instance = Grandpa.call(this);
         // initialize the instance...
@@ -86,7 +90,7 @@ The big concern now is how to implement the inheritance chain, where objects cre
       Parent.prototype = Object.create( Grandpa.prototype );
       // Parent.prototype.x = ...
       // ...
-      
+
       function Child(){
         var instance = Parent.call(this);
         // initialize the instance...
@@ -95,11 +99,11 @@ The big concern now is how to implement the inheritance chain, where objects cre
       Child.prototype = Object.create( Parent.prototype );
       // Child.prototype.x = ...
       // ...
-      
+
       var grandpa = Grandpa.call( Grandpa.prototype );
       var parent = Parent.call( Parent.prototype );
       var child = Child.call( Child.prototype );
-        
+
 As seen above, now both the declaration and the creation of new objects becomes unnecesarily verbose. That's reason enough to use a helper function. In fact two functions are needed, one to *extend* prototypes and another to *wrap builders to ensure they are executed within a proper context*.
 
     function extend( prototype, extension ){
@@ -111,7 +115,7 @@ As seen above, now both the declaration and the creation of new objects becomes 
       }
       return object;
     };
-    
+
     function builder( builder, prototype, extension ){
       if( extension ){
         prototype = extend( prototype, extension );
@@ -139,7 +143,7 @@ With the help of this tools, the previous example can be rewrited as follows:
       }, {
         // Grandpa.prototype...
       });
-      
+
       var Parent = builder(function(){
         var instance = Grandpa.call(this);
         // initialize the instance...
@@ -147,7 +151,7 @@ With the help of this tools, the previous example can be rewrited as follows:
       }, Grandpa.prototype, {
         // Parent.prototype ...
       });
-      
+
       var Child = builder(function(){
         var instance = Parent.call(this);
         // initialize the instance...
@@ -155,7 +159,7 @@ With the help of this tools, the previous example can be rewrited as follows:
       }, Parent.prototype, {
         // Child.prototype ...
       });
-      
+
       var grandpa = Grandpa();
       var parent = Parent();
       var child = Child();
@@ -167,15 +171,15 @@ When initialization is not needed, there is also a mechanism to inherit one obje
       var Grandpa = {
         // ...
       };
-      
+
       var Parent = extend( Grandpa, {
         // ...
       });
-      
+
       var Child = extend( Parent, {
         // ...
       });
-      
+
       var grandpa = Object.create(Grandpa);
       var parent = Object.create(Parent);
       var child = Object.create(Child);

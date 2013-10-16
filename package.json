@@ -5,6 +5,7 @@
   "main": "index.js",
   "files": [ "index.js", "LICENSE" ],
   "dependencies": {
+    "practical-inheritance": "1.0.x",
     "iai-is": "*"
   },
   "devDependencies": {
