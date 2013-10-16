@@ -10,10 +10,14 @@ The object declarations should not be verbose and must be expresive. Vanilla jav
 
 ## Targets
 
-1. Forget the concept of *classes*.
-2. Completely eliminate the use of the `new` keyword.
+> **#1: Forget the concept of _classes_.**
 
-Everything is a instance in javascript, so talking about classes, even in quotes, is a mistake. The *constructor pattern* needs to use the `new` keyword and the code produced looks like a class instantiation, confusing readers. In addition, the use of `new` is not combinable with the ECMA `Function.prototype` functionalities, specially `call` and `apply`, and breaks possible chained calls.
+Everything is a instance in javascript, so talking about classes, even in quotes, is a mistake. There is no excuse. This target leads to the second:
+
+> **#2: Completely eliminate the use of the `new` keyword.**
+
+The use of the `new` keyword produces code that looks like a class instantiation, confusing readers. In addition, the use of `new` is not combinable with the ECMAScript `Function.prototype` functionalities, specially `call` and `apply`, and breaks possible chained calls.
+
 
 ## ~~constructors~~ builders
 
@@ -112,14 +116,14 @@ As seen above, now both the declaration and the creation of new objects becomes 
       if( extension ){
         prototype = extend( prototype, extension );
       }
-      builder.prototype = prototype;
-      
-      return function builderWrap(){
+      function builderWrap(){
         if( prototype.isPrototypeOf(this) ){
           var context = this;
         }
         return builder.apply( context | prototype, arguments );
       };
+      builderWrap.prototype = prototype;
+      return builderWrap;
     };
 
 The `extend` function creates a new object with the specified `prototype` and defines on it as many properties as the own enumerable properties that the `extension` object has.
