@@ -94,7 +94,7 @@ The big concern now is how to implement the inheritance chain, where objects cre
       var parent = Parent.call( Parent.prototype );
       var child = Child.call( Child.prototype );
         
-As seen above, now both the declaration and the creation of new objects becomes unnecesary verbose. That's reason enough to use a helper function. In fact two functions are needed, one to *extend* prototypes and another to **wrap builders to ensure they are executed within a proper context**.
+As seen above, now both the declaration and the creation of new objects becomes unnecesarily verbose. That's reason enough to use a helper function. In fact two functions are needed, one to *extend* prototypes and another to *wrap builders to ensure they are executed within a proper context*.
 
     function extend( prototype, extension ){
       var object = Object.create( prototype );
