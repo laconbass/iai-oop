@@ -31,34 +31,20 @@ Research about creational design patterns and cross out definitions that refer s
 
 * The builder pattern, allowing the use of a function as an object's ~~constructor~~ when invoked with the `new` keyword (aka. *constructor pattern*). As said previously, the use of the `new` keyword should be completely eliminated so this pattern should be avoided.
 
-        // the function builder separates object construction from
-        // its representation (aka instance)
+        // the function builder separates object construction from its representation (aka instance)
         function builder(){
           // ...
         }
         builder.prototype = {
           // ...
         };
-        // builder can create different representations with the same
-        // construction process
+        // builder can create different representations with the same construction process
         var object = new builder();
 
 
 ## ~~prototypal~~ ~~classical~~ practical inheritance
 
-As said, the tools to implement a prototypal inheritance pattern, where object instances are created from other object instances, are natively bundled within ECMAScript specification. `Object.create` is the way to *create a new object with the specified prototype*. The challengue is a pattern that efficiently replaces the ~~constructor~~ builder pattern on the task of *initialize a newly created object with the specified prototype*. The solution is quite simple, and surprisingly somewhere between the *constructor pattern* and the *prototypal inheritance pattern* .
-
-        function builder(){
-          var instance = Object.create(prototype);
-          // initialize the instance...
-          return instance;
-        }
-        var prototype = {
-          // ...
-        };
-        var object = builder();
-
-The first problem found with this code is the breaking of the `instanceof` operator behaviour. On the previous example, `object instanceof builder` resolves to `false`. Fortunately, it can be fixed with ease.
+As said, the tools to implement a prototypal inheritance pattern, where object instances are created from other object instances, are natively bundled within ECMAScript specification. `Object.create` is the way to *create a new object with the specified prototype*. The challengue is a pattern that efficiently replaces the ~~constructor~~ builder pattern on the task of *initialize a newly created object with the specified prototype*. The solution is quite simple, and surprisingly somewhere between the *constructor pattern* and the *prototypal inheritance pattern*: **use a function that creates a new object with speficied prototype, performs all neccessary initializations, and returns the newly created instance**.
 
         function builder(){
           var instance = Object.create(builder.prototype);
@@ -70,27 +56,120 @@ The first problem found with this code is the breaking of the `instanceof` opera
         };
         var object = builder();
 
-Now `instanceof` will resolve `true`, because `Object.getPrototypeOf(object) === builder.prototype`. The big concern now is how to implement the inheritance chain.
+The code above will pass an `instanceof` check as expected. Any `object` having `builder.prototype` on its prototype chain will resolve `true` for `object instanceof builder`. See on the ECMAScript 5.1 specification:
 
-        function builder(){
-          var instance = Object.create(this);
-          // initialize the instance...
-          return instance;
+* [The instanceof operator](http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.6)
+* [HasInstance internal method](http://www.ecma-international.org/ecma-262/5.1/#sec-15.3.5.3)
+
+The big concern now is how to implement the inheritance chain, where objects created through builders inherit from other objects created through builders. Each derived object has to perform ancestor's initializing routines too so is needed a mechanism with prototypes inheriting from ancestor prototypes while builders internally call the ancestor builders. The key is to ensure that the oldest ancestor on the chain will create the new object specifing the child's prototype. There are many solutions, but the simpler is execute builders within the context of the desired prototypes.
+
+      function Grandpa(){
+        var instance = Object.create(this);
+        // initialize the instance...
+        return instance;
+      }
+      Grandpa.prototype = {
+        // ...
+      };
+      
+      function Parent(){
+        var instance = Grandpa.call(this);
+        // initialize the instance...
+        return instance;
+      }
+      Parent.prototype = Object.create( Grandpa.prototype );
+      // Parent.prototype.x = ...
+      // ...
+      
+      function Child(){
+        var instance = Parent.call(this);
+        // initialize the instance...
+        return instance;
+      }
+      Child.prototype = Object.create( Parent.prototype );
+      // Child.prototype.x = ...
+      // ...
+      
+      var grandpa = Grandpa.call( Grandpa.prototype );
+      var parent = Parent.call( Parent.prototype );
+      var child = Child.call( Child.prototype );
+        
+As seen above, now both the declaration and the creation of new objects becomes unnecesary verbose. That's reason enough to use a helper function. In fact two functions are needed, one to *extend* prototypes and another to **wrap builders to ensure they are executed within a proper context**.
+
+    function extend( prototype, extension ){
+      var object = Object.create( prototype );
+      for( var property in extension ){
+        if( extension.hasOwnProperty(property) ){
+          object[property] = extension[property];
         }
-        builder.prototype = {
-          // ...
-        };
-        var object = builder.call( builder.prototype );
-
-        function childBuilder(){
-          var instance = builder.call(this);
-          // initialize the instance...
-          return instance;
+      }
+      return object;
+    };
+    
+    function builder( builder, prototype, extension ){
+      if( extension ){
+        prototype = extend( prototype, extension );
+      }
+      builder.prototype = prototype;
+      
+      return function builderWrap(){
+        if( prototype.isPrototypeOf(this) ){
+          var context = this;
         }
-        childBuilder.prototype = {
-         // ...
-        }
-        var object2 = childBuilder.call( childBuilder.prototype );
+        return builder.apply( context | prototype, arguments );
+      };
+    };
 
+The `extend` function creates a new object with the specified `prototype` and defines on it as many properties as the own enumerable properties that the `extension` object has.
 
-Now... what?
+The `builder` function creates a function that will apply to `builder` the proper context, being the current context (`this`) if it's an object inheriting from `prototype` or `prototype` elsecase. Optionaly provides acces to `extend` functionalities.
+
+With the help of this tools, the previous example can be rewrited as follows:
+
+      var Grandpa = builder(function(){
+        var instance = Object.create(this);
+        // initialize the instance...
+        return instance;
+      }, {
+        // Grandpa.prototype...
+      });
+      
+      var Parent = builder(function(){
+        var instance = Grandpa.call(this);
+        // initialize the instance...
+        return instance;
+      }, Grandpa.prototype, {
+        // Parent.prototype ...
+      });
+      
+      var Child = builder(function(){
+        var instance = Parent.call(this);
+        // initialize the instance...
+        return instance;
+      }, Parent.prototype, {
+        // Child.prototype ...
+      });
+      
+      var grandpa = Grandpa();
+      var parent = Parent();
+      var child = Child();
+
+That's all, the target is accomplished. There is no need of *classes* and no need to use the *new* keyword. This pattern separates the creation and initialization of objects from its representation so decouples the instances from the function that initializes them. The mechanism to check instance types is the `instanceof` operator.
+
+When initialization is not needed, there is also a mechanism to inherit one prototype from another:
+
+      var Grandpa = {
+        // ...
+      };
+      
+      var Parent = extend( Grandpa, {
+        // ...
+      });
+      
+      var Child = extend( Parent, {
+        // ...
+      });
+      
+      var grandpa = Object.create(Grandpa);
+      var parent = Object.create(Parent);
+      var child = Object.create(Child);
