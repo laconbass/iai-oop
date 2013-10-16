@@ -160,9 +160,9 @@ With the help of this tools, the previous example can be rewrited as follows:
       var parent = Parent();
       var child = Child();
 
-That's all, the target is accomplished. There is no need of *classes* and no need to use the *new* keyword. This pattern separates the creation and initialization of objects from its representation so decouples the instances from the function that initializes them. The mechanism to check instance types is the `instanceof` operator.
+That's all, the target is accomplished. There is no need of *classes* and no need to use the *new* keyword. This pattern decouples the creation and initialization of objects from its representation while maintains a true prototypal inheritance pattern. The mechanism to check instance types is the `instanceof` operator.
 
-When initialization is not needed, there is also a mechanism to inherit one prototype from another:
+When initialization is not needed, there is also a mechanism to inherit one object from another:
 
       var Grandpa = {
         // ...
