@@ -2,11 +2,13 @@
 
 iai-oop is a utility belt to deal with object declarations, in the context of OOP for javascript. It has been designed to standarize the inheritance pattern used within [iai](https://npmjs.org/search?q=iai) related modules.
 
-## Design principles: Simplicity & expressiveness
+## Principles
+
+> **Simplicity & expressiveness**
 
 The object declarations should not be verbose and must be expresive. Vanilla javascript is enough expresive but sometimes is verbose. That said, sometimes vanilla javascript produces the most simple and most descriptive code, so encourage to not use an utility function when it does not provide benefits for readability of code.
 
-## The keys
+## Targets
 
 1. Forget the concept of *classes*.
 2. Completely eliminate the use of the `new` keyword.
