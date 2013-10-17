@@ -1,32 +1,23 @@
 var is = require( 'iai-is' )
   , isFn = is( 'Function' )
   , isObject = is( 'Object' )
+  , builder = require( 'practical-inheritance' )
 ;
 
 /**
- * oop utilities are functional tools to perform common tasks on OOP.
- * The filosofy is to type less while being more expressive.
- */
-
-exports = module.exports = oop;
-
-function oop( o ) {
-  return new OopStandardApi(o);
-}
-
-/**
- * @constructor OopStandardApi: provides the standard oop api. Internal use.
+ * @builder OopStandardApi: provides the standard oop api
  *
  * The standard oop api is designed to provide a chainable way for defining
  * object properties and its atributes. On creation, an object is put on stage,
- * and each api call will perform its action over the staged object.
+ * and each api call will perform its action over the staged object. The staged
+ * object is accesible through the "o" property of the api instance.
  */
 
-function OopStandardApi( o ){
-  this.o = o;
-}
-
-OopStandardApi.prototype = {
+var oop = module.exports = builder(function OopStandardApi(o){
+  var instance = Object.create(this);
+  instance.o = o;
+  return instance;
+}, {
   /** @function hidden: defines a non-enumerable, non-writable, data descriptor
    * on the staged object.
    *   @param pname [String]: the property name
@@ -59,8 +50,8 @@ OopStandardApi.prototype = {
     return this;
   },
   /**
-   * @function extend: defines on the staged object as many properties as the
-   * own enumerable properties of the given object, through direct assign.
+   * @function extend: defines through direct assign as many properties as the own
+   * enumerable properties of the given object, on the staged object.
    *
    * As aditional reference, see on the ECMA 5.1 spec...
    * - ["property" definition](http://www.ecma-international.org/ecma-262/5.1/#sec-4.3.23)
@@ -94,14 +85,14 @@ OopStandardApi.prototype = {
     }, this )
     return this;
   }
-};
+});
 
 // DRY helper. creates a method delegator (internal use)
 function use( object, method ){
   if( !isFn(object[ method ]) ) {
     throw Error( "object does not have a method named " + method );
   }
-  return function delegate(){
+  return function delegator(){
     object[ method ].apply( object, arguments );
     return this;
   };
@@ -121,56 +112,24 @@ function use( object, method ){
 
 oop.create = function( prototype ){
   return oop( Object.create(prototype) );
-}
+};
 
 /**
- * @function extend: creates a new object with the specified `prototype` and
- * defines on it as many properties as the own enumerable properties that the
- * `extension` object has.
- *   @param prototype [Object|null]: the object to be used as prototype
- *   @param extension [Object]: the object to be used as extension
- *
- * As aditional reference, see...
- * - oop.create reference
- * - OopStandardApi.extend reference
+ * @function extend: port for practical-inheritance.extend
  */
 
-oop.extend = function( prototype, extension ){
-  return oop.create( prototype ).extend( extension ).o;
-}
+oop.extend = builder.extend;
 
 /**
- * @function creator: define constructor's prototype. If extension is given,
- * use as prototype the result of extending prototype with extension. Additionally,
- * any object who has `prototype` on its prototype chain will pass an `instanceof`
- * check against the constructor function.
- *
- *     Object.create(prototype) instanceof constructor
- *     // is true because
- *     Object.getPrototypeOf( Object.create(prototype) ) === constructor.prototype
- *
- * see [`instanceof` reference on mozilla developer network](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/instanceof)
- *
- * This function also adds a descriptive `toString` method, if `prototype` or
- * `extension` does not define one and `constructor` is a named function.
- * This generic toString method will return: `"[object" + constructor.name + "]"`
+ * @function builder: port for practical-inheritance, adding error-checking.
  */
 
-oop.creator = function( constructor, prototype, extension ){
-  if( !isFn(constructor) ){
-    throw TypeError( "constructor must be a function");
+oop.builder = function( fn, prototype, extension ){
+  if( !isFn(fn) ){
+    throw TypeError( "builder must be a function" );
   }
-  if( extension ){
-    prototype = oop.extend( prototype, extension );
+  if( !isObject(prototype) && prototype !== null ){
+    throw TypeError( "prototype must be an object or null" );
   }
-  if( !prototype.hasOwnProperty('toString') && constructor.name ) {
-    prototype.toString = function(){
-      return "[object "+constructor.name+"]";
-    }
-  }
-  return oop(function Creator(){
-    return constructor.apply( prototype, arguments );
-  }).set( 'prototype', prototype )
-    .o
-  ;
-}
+  return builder.apply( builder, arguments );
+};

@@ -3,15 +3,6 @@ var assert = require( "chai" ).assert
   , oop
 ;
 
-function testChainableApi( api, methods ){
-  for( var name in methods ){
-    assert.isFunction( api[ name ], name + ' exists' );
-    assert.deepEqual(
-      api[ name ].apply( api, methods[name] ), api, name + ' chains'
-    );
-  }
-}
-
 describe( "oop", function(){
   it( "should be required without throwing errors", function(){
     assert.doesNotThrow(function(){

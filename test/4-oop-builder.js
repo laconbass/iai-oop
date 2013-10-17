@@ -2,9 +2,9 @@ var assert = require( 'chai' ).assert
   , oop = require( '..' )
 ;
 
-describe( "#creator", function(){
+describe( "#builder", function(){
   it( "should be exposed as a function", function(){
-    assert.isFunction( oop.creator );
+    assert.isFunction( oop.builder );
   })
 
   it( "should throw a TypeError if first arg is not a function", function(){
@@ -18,62 +18,47 @@ describe( "#creator", function(){
     };
     for( var name in cases ){
       assert.throws(function(cases, name){
-        oop.creator( cases[name], { test: 'value' } )
+        oop.builder( cases[name], { test: 'value' } )
       }.bind({}, cases, name), TypeError, /.*/, name )
     }
   })
 
-  it( "should return a Creator function with a prototype property", function(){
+  it( "should return a builder function with a prototype property", function(){
     var Prototype = { property: 124, method: function(){} };
-    var Creator = oop.creator( function(){}, Prototype );
-    assert.isFunction( Creator, "should return a function" );
-    assert.deepEqual( Creator.prototype, Prototype, "should add the prototype" );
+    var builder = oop.builder( function(){}, Prototype );
+    assert.isFunction( builder, "should return a function" );
+    assert.deepEqual( builder.prototype, Prototype, "should add the prototype" );
   })
 
   it( "should extend prototype if given an extension object", function(){
     var Prototype = { property: 124, method: function(){} };
     var Extension = { property: 666 };
-    var Creator = oop.creator( function(){}, Prototype, Extension );
-    assert.equal( Creator.prototype.property, 666 );
+    var builder = oop.builder( function(){}, Prototype, Extension );
+    assert.equal( builder.prototype.property, 666 );
   })
 
   it( "should fix the instanceof checks as expected", function(){
     var Prototype = { property: 124, method: function(){} };
-    var Creator = oop.creator( function(){}, Prototype );
+    var builder = oop.builder( function(){}, Prototype );
 
     var case1 = Object.create( Prototype );
     var case2 = Object.create( case1 );
     var case3 = Object.create( case2 );
 
-    assert.instanceOf( case1, Creator, "instanceof 1st grade" );
-    assert.instanceOf( case2, Creator, "instanceof 2nd grade" );
-    assert.instanceOf( case3, Creator, "instanceof 3nd grade" );
-  })
-
-  it( "should add toString if given a named function", function(){
-    var Prototype = { property: 124, method: function(){} };
-    var Creator = oop.creator( function Named(){}, Prototype );
-
-    assert.isTrue( Prototype.hasOwnProperty('toString'), "Prototype owns toString" )
-    assert.equal( Object.create(Prototype)+"", "[object Named]" )
-  })
-
-  it( "should not override toString if defined", function(){
-    var Prototype = { toString: function(){} };
-    var Creator = oop.creator( function Named(){}, Prototype );
-
-    assert.notEqual( Object.create(Prototype)+"", "[object Named]" )
+    assert.instanceOf( case1, builder, "instanceof 1st grade" );
+    assert.instanceOf( case2, builder, "instanceof 2nd grade" );
+    assert.instanceOf( case3, builder, "instanceof 3nd grade" );
   })
 
   it( "should execute given function within prototype context and preserve arguments", function(){
     var Prototype = { property: 124, method: function(){} };
-    var Creator = oop.creator( function( a1, a2, a3 ){
+    var builder = oop.builder( function( a1, a2, a3 ){
       assert.deepEqual( this, Prototype, "context should match prototype" );
       assert.equal( a1, 1, "should preserve argument 1" );
       assert.equal( a2, "two", "should preserve argument 2" );
       assert.equal( a3, 3, "should preserve argument 3" );
     }, Prototype );
-    Creator( 1, "two", 3 );
+    builder( 1, "two", 3 );
   })
 
 })
