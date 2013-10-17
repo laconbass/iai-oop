@@ -84,6 +84,12 @@ var oop = module.exports = builder(function OopStandardApi(o){
       this.visible( name, use( object, name ) )
     }, this )
     return this;
+  },
+  /**
+   * Descriptive toString method to ease debugging
+   */
+  toString: function(){
+    return "[OopStandardApi <"+this.o+">]";
   }
 });
 
