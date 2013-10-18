@@ -1,4 +1,5 @@
 var assert = require( 'chai' ).assert
+  , test = require( 'iai-test' )
   , oop = require( '..' )
 ;
 
@@ -59,6 +60,24 @@ describe( "#builder", function(){
       assert.equal( a3, 3, "should preserve argument 3" );
     }, Prototype );
     builder( 1, "two", 3 );
+  })
+
+  it( "should return a function that passes test.builder", function(){
+    var Grandpa = oop.builder( function Grandpa(){
+      return Object.create(this);
+    }, { something: 123 })
+
+    var Parent = oop.builder( function Parent(){
+      return Grandpa.call(this);
+    }, Grandpa.prototype, { something: 456 })
+
+    var Child = oop.builder( function Child(){
+      return Parent.call(this);
+    }, Parent.prototype, { something: 789 })
+
+    test.builder( Grandpa );
+    test.builder( Parent );
+    test.builder( Child );
   })
 
 })
