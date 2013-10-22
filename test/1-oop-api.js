@@ -64,24 +64,25 @@ describe( "OopStandardApi instances", function(){
   })
   describe( "#accessor", function(){
     it( "should define a getter and a setter for value", function(){
+      var someValue = "something";
+      var otherValue = "triggering setter"
       var object = oop({})
-        .accessor( 'value', false, 'coercion', Boolean)
+      .accessor( 'value', function(){ return someValue; }, function(val){
+        assert.equal( val, otherValue, "setter should receive new value" );
+      })
         .o
-        , descriptor = test.defined( object, "value" )
       ;
+      var descriptor = test.defined( object, "value" );
       assert.isTrue( descriptor.enumerable, "accesor should be enumerable" )
       assert.isFalse( descriptor.configurable, "accesor should be configurable" )
 
-      assert.isFalse( object.value, "value should be false" )
+      assert.equal( object.value, someValue, "value should be returned from getter" )
 
-      object.value = true;
-      assert.isTrue( object.value, "value should be true" )
+      someValue = false;
+      assert.isFalse( object.value, "value should be false now" )
 
-      object.value = 0;
-      assert.isFalse( object.value, "value should be casted to false" )
-
-      object.value = "foo";
-      assert.isTrue( object.value, "value should be casted to true" )
+      object.value = otherValue;
+      assert.notEqual( object.value, otherValue, "value should be assigned by getter" );
     })
   })
   describe( "#extend", function(){

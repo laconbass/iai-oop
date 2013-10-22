@@ -60,22 +60,10 @@ var oop = module.exports = builder(function OopStandardApi(o){
    *
    * see ECMA 5.1 spec ["DefineOwnProperty" algorithm](http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.9)
    */
-  accessor: function( pname, value, getter, setter ){
-    var descriptor = { enumerable: true, get: getter, set: setter };
-
-    if( !isFn(getter) ){
-      switch( getter ){
-        case 'coercion':
-          descriptor.get = function(){ return value; }
-          descriptor.set = function( newv ){
-            value = setter.call( this, newv );
-          }
-          break;
-        default:
-          throw TypeError( "unknown accesor mode for "+this.o+"#"+pname+": "+getter );
-      }
-    }
-    Object.defineProperty( this.o, pname, descriptor )
+  accessor: function( pname, getter, setter ){
+    Object.defineProperty( this.o, pname, {
+      enumerable: true, get: getter, set: setter
+    })
     return this;
   },
   /**
