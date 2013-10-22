@@ -19,6 +19,7 @@ describe( "oop", function(){
       visible: [ 'visible name', 'visible value' ],
       hidden: [ 'hidden name', 'hidden value' ],
       set: [ 'set name', 'set value' ],
+      accessor: [ 'accessor name', function(){}, function(){} ],
       extend: [ {} ],
       delegate: [ { method1: function(){} }, 'method1' ]
     });
@@ -59,6 +60,28 @@ describe( "OopStandardApi instances", function(){
       assert.isTrue( descriptor.enumerable, 'enumerable' )
       assert.isTrue( descriptor.configurable, 'configurable' )
       assert.equal( descriptor.value, 'baz' )
+    })
+  })
+  describe( "#accessor", function(){
+    it( "should define a getter and a setter for value", function(){
+      var object = oop({})
+        .accessor( 'value', false, 'coercion', Boolean)
+        .o
+        , descriptor = test.defined( object, "value" )
+      ;
+      assert.isTrue( descriptor.enumerable, "accesor should be enumerable" )
+      assert.isFalse( descriptor.configurable, "accesor should be configurable" )
+
+      assert.isFalse( object.value, "value should be false" )
+
+      object.value = true;
+      assert.isTrue( object.value, "value should be true" )
+
+      object.value = 0;
+      assert.isFalse( object.value, "value should be casted to false" )
+
+      object.value = "foo";
+      assert.isTrue( object.value, "value should be casted to true" )
     })
   })
   describe( "#extend", function(){

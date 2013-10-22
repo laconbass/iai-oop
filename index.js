@@ -1,5 +1,6 @@
 var is = require( 'iai-is' )
   , isFn = is( 'Function' )
+  , isNull = function(o){ return null === o; }
   , isObject = is( 'Object' )
   , builder = require( 'practical-inheritance' )
 ;
@@ -18,7 +19,19 @@ var oop = module.exports = builder(function OopStandardApi(o){
   instance.o = o;
   return instance;
 }, {
-  /** @function hidden: defines a non-enumerable, non-writable, data descriptor
+  /**
+   * @function set: defines a enumerable, writable, configurable, data descriptor
+   * on the staged object.
+   *   @param pname [String]: the property name
+   *   @param value [String]: the property value
+   *
+   * see ECMA 5.1 spec ["DefineOwnProperty" algorithm](http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.9)
+   */
+  set: function( pname, value ){
+    this.o[pname] = value;
+    return this;
+  },
+  /** @function hidden: defines a non-enumerable, non-writable data descriptor
    * on the staged object.
    *   @param pname [String]: the property name
    *   @param value [String]: the property value
@@ -28,7 +41,7 @@ var oop = module.exports = builder(function OopStandardApi(o){
     return this;
   },
   /**
-   * @function visible: defines a enumerable, non-writable, data descriptor on
+   * @function visible: defines a enumerable, non-writable data descriptor on
    * the staged object.
    *   @param pname [String]: the property name
    *   @param value [String]: the property value
@@ -38,15 +51,31 @@ var oop = module.exports = builder(function OopStandardApi(o){
     return this;
   },
   /**
-   * @function set: defines a new property through direct assign on the staged
-   * object.
+   * @function set: defines a enumerable, non-configurable accesor descriptor
+   * on the staged object.
    *   @param pname [String]: the property name
-   *   @param value [String]: the property value
+   *   @param value [String]: the default property value
+   *   @param getter [Function|string]: the getter function or an special mode
+   *   @param setter [Function]: the setter function
    *
    * see ECMA 5.1 spec ["DefineOwnProperty" algorithm](http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.9)
    */
-  set: function( pname, value ){
-    this.o[pname] = value;
+  accessor: function( pname, value, getter, setter ){
+    var descriptor = { enumerable: true, get: getter, set: setter };
+
+    if( !isFn(getter) ){
+      switch( getter ){
+        case 'coercion':
+          descriptor.get = function(){ return value; }
+          descriptor.set = function( newv ){
+            value = setter.call( this, newv );
+          }
+          break;
+        default:
+          throw TypeError( "unknown accesor mode for "+this.o+"#"+pname+": "+getter );
+      }
+    }
+    Object.defineProperty( this.o, pname, descriptor )
     return this;
   },
   /**
