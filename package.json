@@ -3,15 +3,20 @@
   "version": "1.0.0",
   "description": "iai-oop is a utility toolset to ease OOP. The filosofy is to type less while being more expressive.",
   "main": "index.js",
-  "files": [ "index.js", "LICENSE" ],
+  "files": [
+    "index.js",
+    "LICENSE"
+  ],
   "dependencies": {
-    "practical-inheritance": "1.0.x",
+    "practical-inheritance": "1.x",
     "iai-is": "*"
   },
   "devDependencies": {
     "mocha": "1.12.x",
     "chai": "~1.8.0",
-    "iai-test": "*"
+    "iai-test": "*",
+    "mocha-istanbul": "~0.2.0",
+    "istanbul": "~0.2.0"
   },
   "scripts": {
     "test": "node node_modules/.bin/mocha"
