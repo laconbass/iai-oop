@@ -40,6 +40,15 @@ var oop = module.exports = builder(function OopStandardApi(o){
     Object.defineProperty( this.o, pname, { value: value } );
     return this;
   },
+  /** @function internal: defines a non-enumerable, writable data descriptor
+   * on the staged object.
+   *   @param pname [String]: the property name
+   *   @param value [String]: the property value
+   */
+  internal: function( pname, value ){
+    Object.defineProperty( this.o, pname, { value: value, writable: true } );
+    return this;
+  },
   /**
    * @function visible: defines a enumerable, non-writable data descriptor on
    * the staged object.

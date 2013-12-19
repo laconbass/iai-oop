@@ -51,6 +51,16 @@ describe( "OopStandardApi instances", function(){
       assert.equal( descriptor.value, 'other value' )
     })
   })
+  describe( "#internal", function(){
+    it( "should define a non-enumerable, writable value", function(){
+      var foo = oop({}).internal( 'some name', 'go internal' ).o
+      , descriptor = test.defined( foo, "some name" )
+      ;
+      assert.isFalse( descriptor.enumerable, 'enumerable' )
+      assert.isTrue( descriptor.writable, 'writable' )
+      assert.equal( descriptor.value, 'go internal' )
+    })
+  })
   describe( "#set", function(){
     it( "should define a enumerable, configurable, writable value", function(){
       var foo = oop({}).set( 'bar', 'baz' ).o
