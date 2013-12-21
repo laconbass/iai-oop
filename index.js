@@ -1,6 +1,5 @@
 var is = require( 'iai-is' )
   , isFn = is( 'Function' )
-  , isNull = function(o){ return null === o; }
   , isObject = is( 'Object' )
   , builder = require( 'practical-inheritance' )
 ;
@@ -165,3 +164,31 @@ oop.builder = function( fn, prototype, extension ){
   }
   return builder.apply( builder, arguments );
 };
+
+/**
+ * @function callable: experimental api
+ */
+
+oop.callable = function( fn, prototype ){
+  if( !isFn(fn) ){
+    throw TypeError("first argument must be a function");
+  }
+  if( !isObject(prototype) ){
+    throw TypeError("second argument must be an object");
+  }
+  return function createCallable(){
+    var instance = fn.apply( null, arguments );
+    if( !isFn(instance) ){
+      throw TypeError("callable builder should return a function");
+    }
+    var methods = Object.keys(prototype)
+      .filter(function(name){
+        return isFn( prototype[name] );
+      })
+      .forEach(function(name){
+        instance[name] = prototype[name].bind(instance);
+      })
+    ;
+    return instance;
+  }
+}
