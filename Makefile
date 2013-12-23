@@ -69,8 +69,7 @@ documentation:
 	$(call open_in_browser,$(DOC_DIR)/index.html)
 
 gh-pages: test-once documentation
-	@echo "Going to deploy gh-pages. Press any key to continue..."
-	@read -n 1 -s
+	@echo "Going to deploy gh-pages..."
 	@git checkout gh-pages
 	@git merge master
 	@cp -r $(DOC_DIR)/* .
