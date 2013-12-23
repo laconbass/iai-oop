@@ -69,22 +69,13 @@ documentation:
 	$(call open_in_browser,$(DOC_DIR)/index.html)
 
 gh-pages: test-once documentation
-	@cp -r $(DOC_DIR) tmp-for-gh-pages
+	@echo "Going to deploy gh-pages. Press any key to continue..."
+	@read -n 1 -s
 	@git checkout gh-pages
-	@
-	@
-	@
-	@
-        @mkdir -p ${TMP}/js
-        @mkdir -p docs/css
-        @rm -f docs/coverage.html
-                                @${BIN}/lessc --yui-compress --include-path=docs/less docs/less/swig.less docs/css/swig.css
-                   @${BIN}/still docs -o ${TMP} -i "layout" -i "json" -i "less" -v
-                   @make coverage out=${TMP}/coverage.html
-                   @cp dist/swig.* ${TMP}/js/
-                   @git checkout ${BRANCH}
-                   @cp -r ${TMP}/* ./
-                   @rm -rf ${TMP}
+	@git merge master
+	@cp -r $(DOC_DIR)/* .
+	@git push origin gh-pages
+	$(call open_in_browser,laconbass.github.io/iai-oop)
 
 MOCHA=$(BIN)/mocha
 test:
