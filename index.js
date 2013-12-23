@@ -5,12 +5,12 @@ var is = require( 'iai-is' )
 ;
 
 /**
- * @builder OopStandardApi: provides the standard oop api
+ * builder OopStandardApi: provides a standard oop api
  *
  * The standard oop api is designed to provide a chainable way for defining
  * object properties and its atributes. On creation, an object is put on stage,
  * and each api call will perform its action over the staged object. The staged
- * object is accesible through the "o" property of the api instance.
+ * object is accesible through the `o` property of the api instance.
  */
 
 var oop = module.exports = builder(function OopStandardApi(o){
@@ -21,8 +21,8 @@ var oop = module.exports = builder(function OopStandardApi(o){
   /**
    * @function set: defines a enumerable, writable, configurable, data descriptor
    * on the staged object.
-   *   @param pname [String]: the property name
-   *   @param value [String]: the property value
+   *   @param `pname` {String}: the property name
+   *   @param `value` {String}: the property value
    *
    * see ECMA 5.1 spec ["DefineOwnProperty" algorithm](http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.9)
    */
