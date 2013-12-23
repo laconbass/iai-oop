@@ -73,6 +73,7 @@ gh-pages: test-once documentation
 	@git checkout gh-pages
 	@git merge master
 	@cp -r $(DOC_DIR)/* .
+	@git status
 	@git add .
 	@git status
 	@git commit -m "automatic commit for gh-pages deploy"
