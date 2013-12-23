@@ -78,7 +78,7 @@ gh-pages: test-once documentation
 	&& git push origin gh-pages\
 	|| echo "\nThere are no changes\n"
 	@git checkout master
-	$(call open_in_browser,laconbass.github.io/iai-oop)
+	$(call open_in_browser,http://laconbass.github.io/iai-oop)
 
 MOCHA=$(BIN)/mocha
 test:
