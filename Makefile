@@ -73,14 +73,13 @@ gh-pages: test-once documentation
 	@git checkout gh-pages
 	@git merge master
 	@cp -r $(DOC_DIR)/* .
-	@git status
 	@git add .
-	@git status
 	@git commit -m "automatic commit for gh-pages deploy"\
 	&& git push origin gh-pages
 	|| echo "\nThere are no changes.\n"
 	@git checkout master
 	$(call open_in_browser,laconbass.github.io/iai-oop)
+	exit 0
 
 MOCHA=$(BIN)/mocha
 test:
