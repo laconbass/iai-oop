@@ -152,6 +152,12 @@ oop.create = function( prototype ){
 oop.extend = builder.extend;
 
 /**
+ * @function flow: port for iai-flow
+ */
+
+oop.flow = require('iai-flow');
+
+/**
  * @function builder: port for practical-inheritance, adding error-checking.
  */
 

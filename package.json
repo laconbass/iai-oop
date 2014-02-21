@@ -1,6 +1,6 @@
 {
   "name": "iai-oop",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "iai-oop is a utility toolset to ease OOP. The filosofy is to type less while being more expressive.",
   "main": "index.js",
   "files": [
@@ -9,7 +9,8 @@
   ],
   "dependencies": {
     "practical-inheritance": "1.x",
-    "iai-is": "*"
+    "iai-is": "*",
+    "iai-flow": "*"
   },
   "devDependencies": {
     "mocha": "1.12.x",

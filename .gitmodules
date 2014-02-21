@@ -7,3 +7,6 @@
 [submodule "node_modules/practical-inheritance"]
 	path = node_modules/practical-inheritance
 	url = https://github.com/laconbass/practical-inheritance
+[submodule "node_modules/iai-flow"]
+	path = node_modules/iai-flow
+	url = https://github.com/laconbass/iai-flow.git
