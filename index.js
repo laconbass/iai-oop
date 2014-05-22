@@ -121,7 +121,7 @@ var oop = module.exports = builder(function OopStandardApi(o){
 // DRY helper. creates a method delegator (internal use)
 function use( object, method ){
   if( !isFn(object[ method ]) ) {
-    throw Error( "object does not have a method named " + method );
+    throw new Error( "object does not have a method named " + method );
   }
   return function delegator(){
     object[ method ].apply( object, arguments );
@@ -131,7 +131,7 @@ function use( object, method ){
 
 /**
  * @function create: creates a new object with the specified prototype
- * and returns a new standard oop api with the new object staged.
+ * and returns a new standard oop api with that object staged.
  *   @param prototype [object]: the object to be used as prototype
  *
  * This is a shortcut for `oop( Object.create(prototype) )`
@@ -150,12 +150,6 @@ oop.create = function( prototype ){
  */
 
 oop.extend = builder.extend;
-
-/**
- * @function flow: port for iai-flow
- */
-
-oop.flow = require('iai-flow');
 
 /**
  * @function builder: port for practical-inheritance, adding error-checking.

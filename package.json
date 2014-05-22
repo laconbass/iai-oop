@@ -9,8 +9,7 @@
   ],
   "dependencies": {
     "practical-inheritance": "1.x",
-    "iai-is": "*",
-    "iai-flow": "*"
+    "iai-is": "*"
   },
   "devDependencies": {
     "mocha": "1.12.x",
