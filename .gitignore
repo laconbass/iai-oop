@@ -1,9 +1,8 @@
-node_modules/chai/
-node_modules/mocha/
-node_modules/.bin/
-node_modules/mocha-istanbul/
-node_modules/istanbul/
-node_modules/doxit/
+node_modules/*
+!node_modules/practical-inheritance
+!node_modules/iai-is
+!node_modules/iai-test
+
 lib-cov
 *.seed
 *.log
