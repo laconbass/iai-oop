@@ -169,26 +169,19 @@ oop.builder = function( fn, prototype, extension ){
  * @function callable: experimental api
  */
 
-oop.callable = function( fn, prototype ){
-  if( !isFn(fn) ){
-    throw TypeError("first argument must be a function");
+oop.callable = function createCallable( prototype, _call ){
+  _call = _call || '_call';
+  function callable( ){
+    return callable[ _call ].apply( callable, arguments );
   }
-  if( !isObject(prototype) ){
-    throw TypeError("second argument must be an object");
+
+  // mixin callable prototype
+  // does not seem good enough
+  callable.__proto__ = prototype;
+
+  callable.toString = function(){
+    return "[callable "+prototype+"#"+_call+"]";
   }
-  return function createCallable(){
-    var instance = fn.apply( null, arguments );
-    if( !isFn(instance) ){
-      throw TypeError("callable builder should return a function");
-    }
-    var methods = Object.keys(prototype)
-      .filter(function(name){
-        return isFn( prototype[name] );
-      })
-      .forEach(function(name){
-        instance[name] = prototype[name].bind(instance);
-      })
-    ;
-    return instance;
-  }
-}
+
+  return callable;
+};
