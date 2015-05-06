@@ -1,12 +1,3 @@
-[submodule "node_modules/iai-is"]
-	path = node_modules/iai-is
-	url = https://github.com/laconbass/iai-is.git
 [submodule "node_modules/iai-test"]
 	path = node_modules/iai-test
 	url = https://github.com/laconbass/iai-test.git
-[submodule "node_modules/practical-inheritance"]
-	path = node_modules/practical-inheritance
-	url = https://github.com/laconbass/practical-inheritance
-[submodule "node_modules/iai-flow"]
-	path = node_modules/iai-flow
-	url = https://github.com/laconbass/iai-flow.git
