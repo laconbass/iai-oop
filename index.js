@@ -34,6 +34,21 @@ exports.create = function( prototype ){
 };
 
 /**
+ * @function build: Asserts that `context` is `prototype`, or inherits from
+ * it, and returns a new object with the specified `context` as prototype.
+ */
+
+exports.build = function( prototype, context ){
+  // TODO decide if assert( arguments.length == 2 );
+  if( prototype !== context && ! prototype.isPrototypeOf(context) ){
+    var error = new Error('expected context to inherit prototype');
+    error.code = 'OOP_BUILD_CONTEXT';
+    throw error;
+  }
+  return Object.create( context );
+};
+
+/**
  * @function extend: shortcut for `oop(subject).extend(overrides).o`
  */
 
