@@ -9,7 +9,6 @@
   ],
   "devDependencies": {
     "chai": "~1.8.0",
-    "doxit": "~1.1.2",
     "iai-test": "*",
     "istanbul": "~0.2.0",
     "mocha": "^2.2.4",

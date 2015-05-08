@@ -40,7 +40,10 @@ exports.create = function( prototype ){
 
 exports.build = function( prototype, context ){
   // TODO decide if assert( arguments.length == 2 );
-  if( prototype !== context && ! prototype.isPrototypeOf(context) ){
+  if( context === global ){
+    context = prototype;
+  }
+  else if( prototype !== context && ! prototype.isPrototypeOf(context) ){
     var error = new Error('expected context to inherit prototype');
     error.code = 'OOP_BUILD_CONTEXT';
     throw error;
