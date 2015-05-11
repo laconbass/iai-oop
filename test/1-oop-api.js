@@ -95,6 +95,32 @@ describe( "OopStandardApi instances", function(){
       assert.notEqual( object.value, otherValue, "value should be assigned by getter" );
     })
   })
+  describe( "#provider", function(){
+    it( "should define a getter and a setter for value", function(){
+      var someValue = "something";
+      var otherValue = "triggering setter"
+      var object = oop({})
+      .provider( 'value', function(){ return someValue; }, function(val){
+        assert.equal( val, otherValue, "setter should receive new value" );
+      })
+        .o
+      ;
+      var descriptor = test.defined( object, "value" );
+      assert.isFalse( descriptor.enumerable, "provider should be non-enumerable" )
+      assert.isFalse( descriptor.configurable, "provider should be non-configurable" )
+
+      assert.equal( object.value, someValue, "value should be returned from getter" )
+
+      someValue = false;
+      assert.isFalse( object.value, "value should be false now" )
+
+      object.value = otherValue;
+      assert.notEqual( object.value, otherValue, "value should be assigned by getter" );
+    })
+  })
+  describe( "#flag", function(){
+    it( "should be tested" );
+  })
   describe( "#extend", function(){
     it( "should define each property given on staged object", function(){
       var foo = oop({}).extend({

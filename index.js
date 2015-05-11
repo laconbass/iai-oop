@@ -128,7 +128,7 @@ OOPAPI.visible = function( pname, value ){
  * on the staged object.
  *   @param pname [String]: the property name
  *   @param value [String]: the default property value
- *   @param getter [Function|string]: the getter function or an special mode
+ *   @param getter [Function|string]: the getter function
  *   @param setter [Function]: the setter function
  *
  * see ECMA 5.1 spec ["DefineOwnProperty" algorithm](http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.9)
@@ -138,6 +138,46 @@ OOPAPI.accessor = function( pname, getter, setter ){
   Object.defineProperty( this.o, pname, {
     enumerable: true, get: getter, set: setter
   })
+  return this;
+};
+
+/**
+ * @function provider defines a non-enumerable, non-configurable accesor descriptor
+ * on the staged object.
+ *   @param pname [String]: the property name
+ *   @param value [String]: the default property value
+ *   @param getter [Function|undefined]: the getter function
+ *   @param setter [Function|undefined]: the setter function
+ *
+ * see ECMA 5.1 spec ["DefineOwnProperty" algorithm](http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.9)
+ */
+
+OOPAPI.provider = function( pname, getter, setter ){
+  Object.defineProperty( this.o, pname, {
+    enumerable: false, get: getter, set: setter
+  })
+  return this;
+};
+
+/**
+ * @function flag defines a non-enumerable, non-configurable accesor descriptor
+ * on the staged object.
+ *   @param pname [String]: the property name
+ *   @param value [String]: the default property value
+ *   @param getter [Function|undefined]: the getter function
+ *   @param setter [Function|undefined]: the setter function
+ *
+ * see ECMA 5.1 spec ["DefineOwnProperty" algorithm](http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.9)
+ */
+
+OOPAPI.flag = function( pname, defaulting, mode ){
+  defaulting = !!defaulting;
+  this[ mode || 'accessor' ]( pname, function get(){
+    return defaulting;
+  }, function set( value ){
+    assert( value === true || value === false, pname+' must be a boolean' );
+    defaulting = value;
+  });
   return this;
 };
 
