@@ -119,7 +119,25 @@ describe( "OopStandardApi instances", function(){
     })
   })
   describe( "#flag", function(){
-    it( "should be tested" );
+    it( "should define a property defaulting to boolean value", function(){
+      assert.isTrue(  oop({}).flag('test', true).o.test, "should be true"  );
+      assert.isFalse(  oop({}).flag('test', false).o.test, "should be false"  );
+      assert.isTrue(  oop({}).flag('test', 1).o.test, "1 should equal true"  );
+      assert.isFalse(  oop({}).flag('test', 0).o.test, "0 should equal false"  );
+    });
+    describe( 'the property #flag defines', function(){
+      it( "should be able to be set to false", function(){
+        var foo = oop({}).flag('bar', true).o;
+        foo.bar = false;
+        assert.isFalse( foo.bar );
+      });
+      it( "should throw when it's set to non-boolean", function(){
+        var foo = oop({}).flag('bar', true).o;
+        assert.throws(function(){
+          foo.bar = null;
+        })
+      });
+    });
   })
   describe( "#extend", function(){
     it( "should define each property given on staged object", function(){

@@ -175,7 +175,11 @@ OOPAPI.flag = function( pname, defaulting, mode ){
   this[ mode || 'accessor' ]( pname, function get(){
     return defaulting;
   }, function set( value ){
-    assert( value === true || value === false, pname+' must be a boolean' );
+    // TODO benchmark
+    // use 'defaulting' and '!defaulting' instead true and false
+    if( value !== true && value !== false ){
+      throw new TypeError( pname + ' must be set to a boolean' );
+    }
     defaulting = value;
   });
   return this;
