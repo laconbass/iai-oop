@@ -47,6 +47,8 @@ exports.build = function( prototype, context ){
     var error = new Error('expected context to inherit prototype');
     error.code = 'OOP_BUILD_CONTEXT';
     throw error;
+  } else if( prototype !== context ){
+    return context;
   }
   return Object.create( context );
 };
