@@ -17,7 +17,7 @@ DOC_MAIN=$(LIB)
 #directory where reports are stored
 REPORTS=reports
 # browser to use when opening the reports
-BROWSER=google-chrome
+BROWSER=xdg-open
 
 #
 # Utils
@@ -98,10 +98,6 @@ pending:
 clean:
 	@echo "Delete '$(REPORTS)' directory" && rm -rf $(REPORTS)
 
-$(REPORTS): clean
-	$(info Create '$(REPORTS)' directory)
-	@mkdir $(REPORTS)
-
 # directory where complexity report is stored once generated
 REPORT_CPX=$(REPORTS)/complexity
 complexity: $(REPORTS)
@@ -126,7 +122,7 @@ coverage: test-once $(REPORTS)
 	 && mv $(LIB) $(LIB)-orig
 	@echo Replace $(LIB) width instrumented code\
 	 && mv $(LIB)-cov $(LIB)
-	@echo Generate coverage report with istanbul\
+	@echo Generate coverage report with mocha-istanbul\
 	 && ISTANBUL_REPORTERS=lcovonly $(MOCHA) -R mocha-istanbul $(TESTS)
 	@make $(REPORTS)
 	@echo Move coverage report to '$(REPORT_COV)/'\
@@ -136,5 +132,11 @@ coverage: test-once $(REPORTS)
 	@echo Generate html report\
 	 && genhtml $(REPORT_COV)/lcov.info --output-directory $(REPORT_COV)/
 	$(call open_in_browser,$(REPORT_COV)/index.html)
+
+$(REPORTS): clean
+	$(info Create '$(REPORTS)' directory)
+	@mkdir -p $(REPORT_COV)
+	@mkdir -p $(REPORT_CPX)
+
 
 .PHONY: coverage clean test
