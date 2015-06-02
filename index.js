@@ -161,6 +161,17 @@ OOPAPI.provider = function( pname, getter, setter ){
   return this;
 };
 
+// TODO describe it
+OOPAPI.lazyLoad = function( pname, loader, args ){
+  args = args || [];
+  args = Array.isArray(args)? args : [args];
+  var cache;
+  return this.accessor( pname, function lazyLoader(){
+    return cache ||(  cache = loader.apply(loader, args)  );
+  });
+};
+OOPAPI.lazyload = OOPAPI.lazyLoad;
+
 /**
  * @function flag defines a non-enumerable, non-configurable accesor descriptor
  * on the staged object.
